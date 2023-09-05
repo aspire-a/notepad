@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +41,8 @@ fun ListScreen(
 
     LaunchedEffect(Unit) {
 
+        onEvent(ListUiEvent.GetNotes)
+
         uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.Navigate<*> -> {
@@ -59,15 +61,17 @@ fun ListScreen(
             .padding(6.dp), contentPadding = PaddingValues(0.dp)
     ) {
         items(uiState.noteList.size) {
-            Button(
+            FilledTonalButton(
                 onClick = {
-                    onEvent(ListUiEvent.OnNoteClick(uiState.noteList[it]))
+                    onEvent(ListUiEvent.OnNoteClick(uiState.noteList[it].noteTitle))
                 },
                 shape = RectangleShape,
                 modifier = Modifier,
             ) {
                 Text(
-                    text = uiState.noteList[it], modifier = Modifier.fillMaxWidth(),
+                    text = uiState.noteList[it].noteTitle,
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1,
                 )
             }
             Divider(color = Color.Black, thickness = 2.dp)

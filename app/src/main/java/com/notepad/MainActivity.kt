@@ -27,6 +27,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.notepad.navigation.Route
+import com.notepad.screen.add.AddScreen
+import com.notepad.screen.add.AddViewModel
 import com.notepad.screen.detail.DetailScreen
 import com.notepad.screen.list.ListScreen
 import com.notepad.screen.list.ListViewModel
@@ -68,7 +70,12 @@ class MainActivity : ComponentActivity() {
 
                     floatingActionButton = {
                         if (currentScreenRoute?.hasFAB == true) {
-                            FloatingActionButton(onClick = { }) {
+                            FloatingActionButton(onClick = {
+                                navController.handleNavigation(
+                                    Route.ADD.name,
+                                    null
+                                )
+                            }) {
                                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
                             }
                         }
@@ -98,13 +105,25 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        /*
+
                         composable(Route.ADD.name) {
-                            AddScreen(onValueChange =)
-                        }*/
-                        composable(Route.DETAIL.name) {currentStackEntry ->
-                            val text: String? = currentStackEntry.savedStateHandle.get<String>("DetailData")
-                            DetailScreen(textField = text?:"", onValueChange = {})
+
+                            val addViewModel: AddViewModel by viewModels()
+
+                            AddScreen(uiStateFlow = addViewModel.uiState,
+                                uiEventFlow = addViewModel.uiEvent,
+                                onNavigate = { route, data ->
+                                    navController.handleNavigation(route, data)
+                                },
+                                onEvent = {
+                                    addViewModel.onEvent(it)
+                                })
+                        }
+
+                        composable(Route.DETAIL.name) { currentStackEntry ->
+                            val text: String? =
+                                currentStackEntry.savedStateHandle.get<String>("DetailData")
+                            DetailScreen(textField = text ?: "", onValueChange = {})
                         }
 
                     }

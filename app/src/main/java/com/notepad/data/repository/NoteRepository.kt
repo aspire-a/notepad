@@ -7,6 +7,6 @@ interface NoteRepository {
     suspend fun getAllNotes(): Flow<List<NotesEntity>>
     suspend fun getNoteById(noteId: Long): Flow<NotesEntity>
     suspend fun updateNote(notesEntity: NotesEntity)
-    suspend fun addNote(notesEntity: NotesEntity)
+    suspend fun addNote(text: String)
     suspend fun deleteNote(notesEntity: NotesEntity)
 }

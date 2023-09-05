@@ -3,6 +3,7 @@ package com.notepad.data.repository
 import com.notepad.data.datasource.local.roomdb.NotesDAO
 import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDateTime
 
 class NoteRepoImpl(
     private val notesDAO: NotesDAO
@@ -20,8 +21,14 @@ class NoteRepoImpl(
         return notesDAO.updateNote(notesEntity)
     }
 
-    override suspend fun addNote(notesEntity: NotesEntity) {
-        return notesDAO.addNote(notesEntity)
+    override suspend fun addNote(text: String) {
+        return notesDAO.addNote(
+            notesEntity = NotesEntity(
+                noteCreationDate = LocalDateTime.now(),
+                noteTitle = text,
+                noteValue = text,
+            )
+        )
     }
 
     override suspend fun deleteNote(notesEntity: NotesEntity) {

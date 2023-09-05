@@ -2,7 +2,6 @@ package com.notepad.di
 
 
 import android.content.Context
-import com.notepad.data.adapter.LocalDateTimeTypeMoshiAdapter
 import com.notepad.data.datasource.local.roomdb.NotesDAO
 import com.notepad.data.datasource.local.roomdb.NotesDB
 import com.notepad.data.repository.NoteRepoImpl
@@ -14,7 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.time.LocalDateTime
 import javax.inject.Singleton
 
 
@@ -53,7 +51,6 @@ object AppModule {
     @Singleton
     fun provideMoshBuilder(): Moshi.Builder {
         return Moshi.Builder()
-            .add(LocalDateTime::class.java, LocalDateTimeTypeMoshiAdapter())
             .add(KotlinJsonAdapterFactory())
     }
 }
