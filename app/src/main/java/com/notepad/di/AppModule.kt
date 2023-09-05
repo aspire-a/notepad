@@ -26,33 +26,34 @@ object AppModule {
     fun provideNotesDB(
         @ApplicationContext appContext: Context
     ): NotesDB = NotesDB.getInstance(appContext)
-}
 
-@Provides
-fun provideNoteDao(noteDB: NotesDB): NotesDAO {
-    return noteDB.noteDAO()
-}
 
-@Provides
-@Singleton
-fun provideNoteRepo(
-    noteDAO: NotesDAO,
-): NoteRepository {
-    return NoteRepoImpl(
-        noteDAO
-    )
-}
+    @Provides
+    fun provideNoteDao(noteDB: NotesDB): NotesDAO {
+        return noteDB.noteDAO()
+    }
 
-@Provides
-@Singleton
-fun provideMoshi(moshiBuilder: Moshi.Builder): Moshi {
-    return moshiBuilder.build()
-}
+    @Provides
+    @Singleton
+    fun provideNoteRepo(
+        noteDAO: NotesDAO,
+    ): NoteRepository {
+        return NoteRepoImpl(
+            noteDAO
+        )
+    }
 
-@Provides
-@Singleton
-fun provideMoshBuilder(): Moshi.Builder {
-    return Moshi.Builder()
-        .add(LocalDateTime::class.java, LocalDateTimeTypeMoshiAdapter())
-        .add(KotlinJsonAdapterFactory())
+    @Provides
+    @Singleton
+    fun provideMoshi(moshiBuilder: Moshi.Builder): Moshi {
+        return moshiBuilder.build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMoshBuilder(): Moshi.Builder {
+        return Moshi.Builder()
+            .add(LocalDateTime::class.java, LocalDateTimeTypeMoshiAdapter())
+            .add(KotlinJsonAdapterFactory())
+    }
 }
