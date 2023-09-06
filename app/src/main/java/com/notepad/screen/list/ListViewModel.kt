@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -63,14 +64,17 @@ class ListViewModel @Inject constructor(
 
     private fun getNotes() {
         viewModelScope.launch(ExceptionHandler.handler) {
-
-
-            noteRepo.getAllNotes()
-                .catch {}
-                .collect { noteList ->
-                    _uiState.value.noteList = noteList
-                }
-
+          noteRepo.getAllNotes()
+            .catch {
+              _uiEvent.send(UiEvent.ShowToast(it.message))
+            }
+            .collect { noteList ->
+              _uiState.update { state ->
+                state.copy(
+                  noteList = noteList
+                )
+              }
+            }
         }
     }
 }

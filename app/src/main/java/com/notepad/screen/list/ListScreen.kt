@@ -33,6 +33,7 @@ fun ListScreen(
     uiStateFlow: StateFlow<ListUiState>,
     uiEventFlow: Flow<UiEvent>,
     onNavigate: (route: String, data: Map<String, Any?>?) -> Unit,
+    showToast: (String?) -> Unit,
     onEvent: (ListUiEvent) -> Unit
 ) {
 
@@ -49,7 +50,9 @@ fun ListScreen(
                     onNavigate(event.route, event.data)
                 }
 
-                else -> {}
+                is UiEvent.ShowToast -> {
+                    showToast(event.message)
+                }
             }
         }
     }
@@ -84,11 +87,14 @@ fun ListScreen(
 @Composable
 fun PreviewListScreen() {
     NotepadTheme {
-        ListScreen(uiStateFlow = MutableStateFlow(
-            ListUiState()
-        ),
+        ListScreen(
+            uiStateFlow = MutableStateFlow(
+                ListUiState()
+            ),
             uiEventFlow = Channel<UiEvent>().receiveAsFlow(),
             onNavigate = { _, _ -> },
-            onEvent = {})
+            showToast = { },
+            onEvent = { }
+        )
     }
 }

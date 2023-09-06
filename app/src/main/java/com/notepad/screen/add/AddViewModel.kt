@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,13 +40,19 @@ class AddViewModel @Inject constructor(
         }
     }
 
-    fun onNoteSave() {
+    private fun onNoteSave() {
         viewModelScope.launch(ExceptionHandler.handler) {
             noteRepo.addNote(_uiState.value.note)
+                .catch {
+                    _uiEvent.send(UiEvent.ShowToast(it.message))
+                }
+                .collect {
+                    onValueChange("")
+                }
         }
     }
 
-    fun onValueChange(note: String) {
+    private fun onValueChange(note: String) {
         viewModelScope.launch(ExceptionHandler.handler) {
             _uiState.update {
                 it.copy(

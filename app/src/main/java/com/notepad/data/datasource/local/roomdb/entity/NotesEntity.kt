@@ -10,10 +10,9 @@ import java.time.LocalDateTime
 @Parcelize
 data class NotesEntity(
     @PrimaryKey(autoGenerate = true)
-    val noteId: Long = 1,
+    val noteId: Long = 0,
     val noteCreationDate: LocalDateTime,
-    val noteUpdateDate: LocalDateTime? = null,
+    val noteUpdateDate: LocalDateTime,
     val noteTitle: String,
-    val noteValue: String,
-
-    ) : Parcelable
+    val noteValue: String
+) : Parcelable

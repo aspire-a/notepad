@@ -2,7 +2,10 @@ package com.notepad.data.repository
 
 import com.notepad.data.datasource.local.roomdb.NotesDAO
 import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDateTime
 
 class NoteRepoImpl(
@@ -17,21 +20,31 @@ class NoteRepoImpl(
         return notesDAO.getNoteById(noteId)
     }
 
-    override suspend fun updateNote(notesEntity: NotesEntity) {
-        return notesDAO.updateNote(notesEntity)
+    override suspend fun updateNote(notesEntity: NotesEntity): Flow<Unit> {
+        return flow {
+            notesDAO.updateNote(notesEntity)
+            emit(Unit)
+        }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun addNote(text: String) {
-        return notesDAO.addNote(
+    override suspend fun addNote(text: String): Flow<Unit> {
+        return flow {
+          notesDAO.addNote(
             notesEntity = NotesEntity(
-                noteCreationDate = LocalDateTime.now(),
-                noteTitle = text,
-                noteValue = text,
+              noteCreationDate = LocalDateTime.now(),
+              noteUpdateDate = LocalDateTime.now(),
+              noteTitle = text,
+              noteValue = text,
             )
-        )
+          )
+          emit(Unit)
+        }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun deleteNote(notesEntity: NotesEntity) {
-        return notesDAO.deleteNote(notesEntity)
+    override suspend fun deleteNote(notesEntity: NotesEntity): Flow<Unit> {
+        return flow {
+          notesDAO.deleteNote(notesEntity)
+          emit(Unit)
+        }.flowOn(Dispatchers.IO)
     }
 }

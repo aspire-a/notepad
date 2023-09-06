@@ -1,6 +1,7 @@
 package com.notepad
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -94,10 +95,14 @@ class MainActivity : ComponentActivity() {
 
                             val listViewModel: ListViewModel by viewModels()
 
-                            ListScreen(uiStateFlow = listViewModel.uiState,
+                            ListScreen(
+                                uiStateFlow = listViewModel.uiState,
                                 uiEventFlow = listViewModel.uiEvent,
                                 onNavigate = { route, data ->
                                     navController.handleNavigation(route, data)
+                                },
+                                showToast = {
+                                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
                                 },
                                 onEvent = {
                                     listViewModel.onEvent(it)
@@ -110,22 +115,29 @@ class MainActivity : ComponentActivity() {
 
                             val addViewModel: AddViewModel by viewModels()
 
-                            AddScreen(uiStateFlow = addViewModel.uiState,
+                            AddScreen(
+                                uiStateFlow = addViewModel.uiState,
                                 uiEventFlow = addViewModel.uiEvent,
                                 onNavigate = { route, data ->
                                     navController.handleNavigation(route, data)
                                 },
+                                showToast = {
+                                    Toast.makeText(baseContext, it, Toast.LENGTH_SHORT).show()
+                                },
                                 onEvent = {
                                     addViewModel.onEvent(it)
-                                })
+                                }
+                            )
                         }
 
                         composable(Route.DETAIL.name) { currentStackEntry ->
                             val text: String? =
                                 currentStackEntry.savedStateHandle.get<String>("DetailData")
-                            DetailScreen(textField = text ?: "", onValueChange = {})
+                            DetailScreen(
+                              textField = text ?: "",
+                              onValueChange = {}
+                            )
                         }
-
                     }
                 }
             }

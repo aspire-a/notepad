@@ -4,8 +4,8 @@ enum class Route(
     var hasTopBar: Boolean = false,
     val hasFAB: Boolean = false
 ) {
-    ADD(hasTopBar = true),
-    DETAIL(),
+    ADD,
+    DETAIL,
     LIST(hasTopBar = true, hasFAB = true);
 
     companion object {

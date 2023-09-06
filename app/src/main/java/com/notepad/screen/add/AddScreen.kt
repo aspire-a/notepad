@@ -29,6 +29,7 @@ fun AddScreen(
     uiStateFlow: StateFlow<AddUiState>,
     uiEventFlow: Flow<UiEvent>,
     onNavigate: (route: String, data: Map<String, Any?>?) -> Unit,
+    showToast: (String?) -> Unit,
     onEvent: (AddUiEvent) -> Unit
 ) {
 
@@ -42,7 +43,9 @@ fun AddScreen(
                     onNavigate(event.route, event.data)
                 }
 
-                else -> {}
+                is UiEvent.ShowToast -> {
+                    showToast(event.message)
+                }
             }
         }
     }
@@ -61,6 +64,8 @@ fun AddScreen(
     ) {
         item {
             TextField(
+                modifier = Modifier
+                    .fillMaxSize(),
                 value = uiState.note,
                 onValueChange = {
                     onEvent(AddUiEvent.OnValueChange(it))
@@ -86,6 +91,7 @@ fun PreviewAddScreen() {
             ),
             uiEventFlow = Channel<UiEvent>().receiveAsFlow(),
             onNavigate = { _, _ -> },
+            showToast = { },
             onEvent = {}
         )
     }
