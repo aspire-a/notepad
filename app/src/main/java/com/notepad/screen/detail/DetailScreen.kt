@@ -6,18 +6,49 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.notepad.model.UiEvent
 import com.notepad.ui.theme.NotepadTheme
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    textField: String,
-    onValueChange: (String) -> Unit
+    noteId: Long?,
+    uiStateFlow: StateFlow<DetailUiState>,
+    uiEventFlow: Flow<UiEvent>,
+    onNavigate: (route: String, data: Map<String, Any?>?) -> Unit,
+    showToast: (String?) -> Unit,
+    onEvent: (DetailUiEvent) -> Unit
 ) {
 
+    val uiState by uiStateFlow.collectAsState()
+
+    LaunchedEffect(Unit) {
+
+        onEvent(DetailUiEvent.GetNoteById(noteId = noteId))
+
+        uiEventFlow.collect { event ->
+            when (event) {
+                is UiEvent.Navigate<*> -> {
+                    onNavigate(event.route, event.data)
+                }
+
+                is UiEvent.ShowToast -> {
+                    showToast(event.message)
+                }
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -25,9 +56,9 @@ fun DetailScreen(
     ) {
         item {
             TextField(
-                value = textField,
+                value = uiState.note?.noteValue ?: "",
                 onValueChange = {
-                    onValueChange(it)
+                    onEvent(DetailUiEvent.OnValueChange(it))
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.Transparent,
@@ -45,8 +76,14 @@ fun DetailScreen(
 fun PreviewDetailScreen() {
     NotepadTheme {
         DetailScreen(
-            textField = "denememememem uzun bir metinemem uzun bir metiemem uzun bir metiemem uzun bir metiemem uzun bir metiemem uzun bir meti",
-            onValueChange = {}
+            noteId = 1,
+            uiStateFlow = MutableStateFlow(
+                DetailUiState()
+            ),
+            uiEventFlow = Channel<UiEvent>().receiveAsFlow(),
+            onNavigate = { _, _ -> },
+            showToast = { },
+            onEvent = {}
         )
     }
 }

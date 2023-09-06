@@ -36,7 +36,7 @@ class ListViewModel @Inject constructor(
             }
 
             is ListUiEvent.OnNoteClick -> {
-                onNavigateDetail(listUiEvent.text)
+                onNavigateDetail(listUiEvent.textid)
             }
 
             is ListUiEvent.OnNoteLongPress -> {
@@ -49,13 +49,13 @@ class ListViewModel @Inject constructor(
         }
     }
 
-    private fun onNavigateDetail(text: String) {
+    private fun onNavigateDetail(textId: Long) {
         viewModelScope.launch(ExceptionHandler.handler) {
             _uiEvent.send(
                 UiEvent.Navigate(
                     route = Route.DETAIL.name,
                     data = mapOf<String, Any>(
-                        "DetailData" to text
+                        "DetailData" to textId
                     )
                 )
             )
@@ -64,17 +64,17 @@ class ListViewModel @Inject constructor(
 
     private fun getNotes() {
         viewModelScope.launch(ExceptionHandler.handler) {
-          noteRepo.getAllNotes()
-            .catch {
-              _uiEvent.send(UiEvent.ShowToast(it.message))
-            }
-            .collect { noteList ->
-              _uiState.update { state ->
-                state.copy(
-                  noteList = noteList
-                )
-              }
-            }
+            noteRepo.getAllNotes()
+                .catch {
+                    _uiEvent.send(UiEvent.ShowToast(it.message))
+                }
+                .collect { noteList ->
+                    _uiState.update { state ->
+                        state.copy(
+                            noteList = noteList
+                        )
+                    }
+                }
         }
     }
 }

@@ -66,7 +66,7 @@ fun ListScreen(
         items(uiState.noteList.size) {
             FilledTonalButton(
                 onClick = {
-                    onEvent(ListUiEvent.OnNoteClick(uiState.noteList[it].noteTitle))
+                    onEvent(ListUiEvent.OnNoteClick(uiState.noteList[it].noteId))
                 },
                 shape = RectangleShape,
                 modifier = Modifier,

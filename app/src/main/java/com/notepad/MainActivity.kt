@@ -31,6 +31,7 @@ import com.notepad.navigation.Route
 import com.notepad.screen.add.AddScreen
 import com.notepad.screen.add.AddViewModel
 import com.notepad.screen.detail.DetailScreen
+import com.notepad.screen.detail.DetailViewModel
 import com.notepad.screen.list.ListScreen
 import com.notepad.screen.list.ListViewModel
 import com.notepad.ui.theme.NotepadTheme
@@ -131,11 +132,26 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Route.DETAIL.name) { currentStackEntry ->
-                            val text: String? =
-                                currentStackEntry.savedStateHandle.get<String>("DetailData")
+
+                            val detailViewModel: DetailViewModel by viewModels()
+
+                            val noteId: Long? =
+                                currentStackEntry.savedStateHandle.get<Long>("DetailData")
+
                             DetailScreen(
-                              textField = text ?: "",
-                              onValueChange = {}
+
+                                noteId = noteId,
+                                uiStateFlow = detailViewModel.uiState,
+                                uiEventFlow = detailViewModel.uiEvent,
+                                onNavigate = { route, data ->
+                                    navController.handleNavigation(route, data)
+                                },
+                                showToast = {
+                                    Toast.makeText(baseContext, it, Toast.LENGTH_SHORT).show()
+                                },
+                                onEvent = {
+                                    detailViewModel.onEvent(it)
+                                }
                             )
                         }
                     }
