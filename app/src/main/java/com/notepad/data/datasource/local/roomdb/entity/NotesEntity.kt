@@ -13,6 +13,5 @@ data class NotesEntity(
     val noteId: Long = 0,
     val noteCreationDate: LocalDateTime,
     val noteUpdateDate: LocalDateTime,
-    val noteTitle: String,
     val noteValue: String
 ) : Parcelable

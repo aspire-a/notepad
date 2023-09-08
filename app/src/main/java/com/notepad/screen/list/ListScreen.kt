@@ -72,7 +72,7 @@ fun ListScreen(
                 modifier = Modifier,
             ) {
                 Text(
-                    text = uiState.noteList[it].noteTitle,
+                    text = uiState.noteList[it].noteValue,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                 )

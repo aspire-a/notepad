@@ -13,7 +13,7 @@ import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
     entities = [
         NotesEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(LocalDateTimeConverter::class)

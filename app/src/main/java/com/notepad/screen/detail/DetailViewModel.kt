@@ -2,6 +2,7 @@ package com.notepad.screen.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
 import com.notepad.data.repository.NoteRepository
 import com.notepad.model.ExceptionHandler
 import com.notepad.model.UiEvent
@@ -47,18 +48,23 @@ class DetailViewModel @Inject constructor(
     private fun onNoteUpdate() {
         viewModelScope.launch(ExceptionHandler.handler) {
 
-            val noteValue = _uiState.value.note?.noteValue
+            val note = _uiState.value.note
 
 
-            noteValue?.let {
-                if (noteValue.isNotBlank()) {
-                    noteRepo.addNote(noteValue).catch {
+
+            note?.let {
+                if (note.noteValue.isNotBlank()) {
+                    noteRepo.updateNote(note).catch {
                         _uiEvent.send(UiEvent.ShowToast(it.message))
                     }.collect {
-                        onValueChange("")
+
                     }
                 } else {
-
+                    noteRepo.deleteNote(note)
+                        .catch {
+                            _uiEvent.send(UiEvent.ShowToast(it.message))
+                        }.collect {
+                        }
                 }
             }
         }
@@ -66,15 +72,37 @@ class DetailViewModel @Inject constructor(
 
     private fun onValueChange(note: String) {
         viewModelScope.launch(ExceptionHandler.handler) {
+
+            var newNote: NotesEntity? = null
+
+            _uiState.value.note?.let {
+                newNote = NotesEntity(
+                    noteId = it.noteId,
+                    noteCreationDate = it.noteCreationDate,
+                    noteUpdateDate = it.noteUpdateDate,
+                    noteValue = note
+                )
+            }
+
             _uiState.update {
                 it.copy(
-                    note = _uiState.value.note?.copy(
-                        noteValue = note
-                    )
+                    note = newNote
                 )
             }
         }
     }
+
+
+    private fun onValueChange(note: NotesEntity) {
+        viewModelScope.launch(ExceptionHandler.handler) {
+            _uiState.update {
+                it.copy(
+                    note = note
+                )
+            }
+        }
+    }
+
 
     private fun getNoteById(noteId: Long?) {
         viewModelScope.launch(ExceptionHandler.handler) {
@@ -83,7 +111,7 @@ class DetailViewModel @Inject constructor(
                 noteRepo.getNoteById(noteId).catch {
                     _uiEvent.send(UiEvent.ShowToast(it.message))
                 }.collect {
-                    onValueChange(it.noteValue)
+                    onValueChange(it)
 
                 }
             }

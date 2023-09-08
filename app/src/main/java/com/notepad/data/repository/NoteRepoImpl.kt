@@ -33,7 +33,6 @@ class NoteRepoImpl(
             notesEntity = NotesEntity(
               noteCreationDate = LocalDateTime.now(),
               noteUpdateDate = LocalDateTime.now(),
-              noteTitle = text,
               noteValue = text,
             )
           )
