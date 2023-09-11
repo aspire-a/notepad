@@ -47,6 +47,10 @@ fun DetailScreen(
                 is UiEvent.ShowToast -> {
                     showToast(event.message)
                 }
+
+                else -> {
+
+                }
             }
         }
     }

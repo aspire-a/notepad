@@ -26,10 +26,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
+import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
 import com.notepad.navigation.Route
 import com.notepad.screen.add.AddScreen
 import com.notepad.screen.add.AddViewModel
+import com.notepad.screen.delete.DeletePopUp
+import com.notepad.screen.delete.DeleteViewModel
 import com.notepad.screen.detail.DetailScreen
 import com.notepad.screen.detail.DetailViewModel
 import com.notepad.screen.list.ListScreen
@@ -103,11 +107,40 @@ class MainActivity : ComponentActivity() {
                                     navController.handleNavigation(route, data)
                                 },
                                 showToast = {
-                                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT)
+                                        .show()
                                 },
                                 onEvent = {
                                     listViewModel.onEvent(it)
-                                }
+                                },
+                                showDialog = { route, data ->
+                                    navController.handleDialogNavigation(route, data)
+                                },
+                            )
+                        }
+
+
+                        dialog(Route.DELETE.name) { currentStackEntry ->
+
+                            val deleteViewModel: DeleteViewModel by viewModels()
+                            val noteEntity: NotesEntity? =
+                                currentStackEntry.savedStateHandle.get<NotesEntity>("DeleteData")
+
+                            DeletePopUp(
+                                uiEventFlow = deleteViewModel.uiEvent,
+                                onNavigate = { route, data ->
+                                    navController.handleNavigation(route, data)
+                                },
+                                showToast = {
+                                    Toast.makeText(baseContext, it, Toast.LENGTH_SHORT).show()
+                                },
+                                onEvent = {
+                                    deleteViewModel.onEvent(it)
+                                },
+                                closeDialog = {
+                                    navController.popBackStack()
+                                },
+                                noteEntity = noteEntity,
                             )
                         }
 
@@ -177,8 +210,25 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-
-
     }
+
+    private fun NavHostController.handleDialogNavigation(
+        dialogRoute: String,
+        data: Map<String, Any?>?
+    ) {
+        navigate(
+            route = dialogRoute
+        )
+        getBackStackEntry(route = dialogRoute).apply {
+            data?.forEach { (key, value) ->
+                savedStateHandle.set(
+                    key = key,
+                    value = value
+                )
+            }
+        }
+    }
+
+
 }
 

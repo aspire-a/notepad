@@ -2,6 +2,7 @@ package com.notepad.screen.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
 import com.notepad.data.repository.NoteRepository
 import com.notepad.model.ExceptionHandler
 import com.notepad.model.UiEvent
@@ -46,6 +47,10 @@ class ListViewModel @Inject constructor(
             ListUiEvent.GetNotes -> {
                 getNotes()
             }
+
+            is ListUiEvent.AskPopUp -> {
+                askPopUp(listUiEvent.notesEntity)
+            }
         }
     }
 
@@ -77,4 +82,20 @@ class ListViewModel @Inject constructor(
                 }
         }
     }
+
+
+    private fun askPopUp(notesEntity: NotesEntity?) {
+        viewModelScope.launch(ExceptionHandler.handler) {
+            _uiEvent.send(
+                UiEvent.ShowPopUp(
+                    route = Route.DELETE.name,
+                    data = mapOf(
+                        "DeleteData" to notesEntity
+                    )
+                )
+            )
+        }
+    }
+
+
 }

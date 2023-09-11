@@ -6,7 +6,9 @@ enum class Route(
 ) {
     ADD,
     DETAIL,
-    LIST(hasTopBar = true, hasFAB = true);
+    LIST(hasTopBar = true, hasFAB = true),
+    DELETE(hasTopBar = true, hasFAB = true),
+    ;
 
     companion object {
         fun getRoute(routeName: String?): Route? {

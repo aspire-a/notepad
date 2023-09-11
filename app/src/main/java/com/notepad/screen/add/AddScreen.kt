@@ -43,6 +43,10 @@ fun AddScreen(
                 is UiEvent.ShowToast -> {
                     showToast(event.message)
                 }
+
+                else -> {
+
+                }
             }
         }
     }
