@@ -28,6 +28,7 @@ class AddViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
+
     fun onEvent(addUiEvent: AddUiEvent) {
         when (addUiEvent) {
             is AddUiEvent.OnNoteSave -> {
@@ -37,19 +38,21 @@ class AddViewModel @Inject constructor(
             is AddUiEvent.OnValueChange -> {
                 onValueChange(addUiEvent.text)
             }
+
+            AddUiEvent.FocusRequest -> {
+                onFocusRequest()
+            }
         }
     }
 
     private fun onNoteSave() {
         viewModelScope.launch(ExceptionHandler.handler) {
             if (_uiState.value.note.isNotBlank()) {
-                noteRepo.addNote(_uiState.value.note)
-                    .catch {
-                        _uiEvent.send(UiEvent.ShowToast(it.message))
-                    }
-                    .collect {
-                        onValueChange("")
-                    }
+                noteRepo.addNote(_uiState.value.note).catch {
+                    _uiEvent.send(UiEvent.ShowToast(it.message))
+                }.collect {
+                    onValueChange("")
+                }
             } else {
 
             }
@@ -63,6 +66,12 @@ class AddViewModel @Inject constructor(
                     note = note
                 )
             }
+        }
+    }
+
+    private fun onFocusRequest() {
+        viewModelScope.launch(ExceptionHandler.handler) {
+            _uiEvent.send(UiEvent.FocusRequester(_uiState.value.focusRequest))
         }
     }
 }

@@ -7,6 +7,7 @@ import com.notepad.data.repository.NoteRepository
 import com.notepad.model.ExceptionHandler
 import com.notepad.model.UiEvent
 import com.notepad.navigation.Route
+import com.notepad.util.sortNoteListByUpdateDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -76,7 +77,7 @@ class ListViewModel @Inject constructor(
                 .collect { noteList ->
                     _uiState.update { state ->
                         state.copy(
-                            noteList = noteList
+                            noteList = noteList.sortNoteListByUpdateDate()
                         )
                     }
                 }

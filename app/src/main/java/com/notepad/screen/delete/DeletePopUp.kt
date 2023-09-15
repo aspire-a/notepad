@@ -60,6 +60,8 @@ fun DeletePopUp(
                 is UiEvent.ShowPopUp<*> -> {
 
                 }
+
+                else -> {}
             }
         }
     }

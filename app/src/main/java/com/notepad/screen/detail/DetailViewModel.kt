@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 
@@ -48,9 +49,15 @@ class DetailViewModel @Inject constructor(
     private fun onNoteUpdate() {
         viewModelScope.launch(ExceptionHandler.handler) {
 
+            _uiState.update {
+                it.copy(
+                    note = _uiState.value.note?.copy(
+                        noteUpdateDate = LocalDateTime.now()
+                    )
+                )
+            }
+
             val note = _uiState.value.note
-
-
 
             note?.let {
                 if (note.noteValue.isNotBlank()) {

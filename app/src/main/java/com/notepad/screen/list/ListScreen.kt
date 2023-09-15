@@ -65,6 +65,8 @@ fun ListScreen(
                 UiEvent.ClosePopUp -> {
 
                 }
+
+                else -> {}
             }
         }
     }

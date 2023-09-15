@@ -11,7 +11,7 @@ class LocalDateTimeConverter {
         return try {
             LocalDateTime.parse(
                 dateString,
-                DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm").withLocale(Locale.ENGLISH)
+                DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm:ss").withLocale(Locale.ENGLISH)
             )
         } catch (e: Exception) {//Exception Handler
             throw e
@@ -21,7 +21,7 @@ class LocalDateTimeConverter {
     @TypeConverter
     fun toDateTimeString(localDateTime: LocalDateTime): String {
         return try {
-            DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm")
+            DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm:ss")
                 .withLocale(Locale.ENGLISH)
                 .format(localDateTime)
         } catch (e: Exception) {

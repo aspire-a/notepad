@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.notepad.model.UiEvent
@@ -34,6 +35,8 @@ fun AddScreen(
 
     LaunchedEffect(Unit) {
 
+        onEvent(AddUiEvent.FocusRequest)
+
         uiEventFlow.collect { event ->
             when (event) {
                 is UiEvent.Navigate<*> -> {
@@ -42,6 +45,10 @@ fun AddScreen(
 
                 is UiEvent.ShowToast -> {
                     showToast(event.message)
+                }
+
+                is UiEvent.FocusRequester -> {
+                    event.focusRequester.requestFocus()
                 }
 
                 else -> {
@@ -61,7 +68,8 @@ fun AddScreen(
 
     TextField(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .focusRequester(uiState.focusRequest),
         value = uiState.note,
         onValueChange = {
             onEvent(AddUiEvent.OnValueChange(it))
@@ -80,14 +88,12 @@ fun AddScreen(
 @Composable
 fun PreviewAddScreen() {
     NotepadTheme {
-        AddScreen(
-            uiStateFlow = MutableStateFlow(
-                AddUiState()
-            ),
+        AddScreen(uiStateFlow = MutableStateFlow(
+            AddUiState()
+        ),
             uiEventFlow = Channel<UiEvent>().receiveAsFlow(),
             onNavigate = { _, _ -> },
             showToast = { },
-            onEvent = {}
-        )
+            onEvent = {})
     }
 }

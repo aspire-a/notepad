@@ -78,8 +78,7 @@ class MainActivity : ComponentActivity() {
                         if (currentScreenRoute?.hasFAB == true) {
                             FloatingActionButton(onClick = {
                                 navController.handleNavigation(
-                                    Route.ADD.name,
-                                    null
+                                    Route.ADD.name, null
                                 )
                             }) {
                                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
@@ -91,8 +90,7 @@ class MainActivity : ComponentActivity() {
                 ) { paddingValues ->
 
                     NavHost(
-                        modifier = Modifier
-                            .padding(paddingValues),
+                        modifier = Modifier.padding(paddingValues),
                         navController = navController,
                         startDestination = Route.LIST.name
                     ) {
@@ -149,8 +147,7 @@ class MainActivity : ComponentActivity() {
 
                             val addViewModel: AddViewModel by viewModels()
 
-                            AddScreen(
-                                uiStateFlow = addViewModel.uiState,
+                            AddScreen(uiStateFlow = addViewModel.uiState,
                                 uiEventFlow = addViewModel.uiEvent,
                                 onNavigate = { route, data ->
                                     navController.handleNavigation(route, data)
@@ -160,8 +157,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onEvent = {
                                     addViewModel.onEvent(it)
-                                }
-                            )
+                                })
                         }
 
                         composable(Route.DETAIL.name) { currentStackEntry ->
@@ -184,8 +180,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onEvent = {
                                     detailViewModel.onEvent(it)
-                                }
-                            )
+                                })
                         }
                     }
                 }
@@ -195,8 +190,7 @@ class MainActivity : ComponentActivity() {
 
 
     private fun NavHostController.handleNavigation(
-        route: String,
-        data: Map<String, Any?>?
+        route: String, data: Map<String, Any?>?
     ) {
 
         navigate(
@@ -205,16 +199,14 @@ class MainActivity : ComponentActivity() {
         getBackStackEntry(route = route).apply {
             data?.forEach { (key, value) ->
                 savedStateHandle.set(
-                    key = key,
-                    value = value
+                    key = key, value = value
                 )
             }
         }
     }
 
     private fun NavHostController.handleDialogNavigation(
-        dialogRoute: String,
-        data: Map<String, Any?>?
+        dialogRoute: String, data: Map<String, Any?>?
     ) {
         navigate(
             route = dialogRoute
@@ -222,13 +214,10 @@ class MainActivity : ComponentActivity() {
         getBackStackEntry(route = dialogRoute).apply {
             data?.forEach { (key, value) ->
                 savedStateHandle.set(
-                    key = key,
-                    value = value
+                    key = key, value = value
                 )
             }
         }
     }
-
-
 }
 
