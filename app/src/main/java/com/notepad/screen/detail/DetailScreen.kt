@@ -1,7 +1,6 @@
 package com.notepad.screen.detail
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -62,40 +61,30 @@ fun DetailScreen(
     }
 
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        item {
-            TextField(
-                value = uiState.note?.noteValue ?: "",
-                onValueChange = {
-                    onEvent(DetailUiEvent.OnValueChange(it))
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                )
-            )
-        }
-    }
+    TextField(
+        modifier = Modifier.fillMaxSize(), value = uiState.note?.noteValue ?: "", onValueChange = {
+            onEvent(DetailUiEvent.OnValueChange(it))
+        }, colors = TextFieldDefaults.textFieldColors(
+            containerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+        )
+    )
+
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewDetailScreen() {
     NotepadTheme {
-        DetailScreen(
-            noteId = 1,
+        DetailScreen(noteId = 1,
             uiStateFlow = MutableStateFlow(
                 DetailUiState()
             ),
             uiEventFlow = Channel<UiEvent>().receiveAsFlow(),
             onNavigate = { _, _ -> },
             showToast = { },
-            onEvent = {}
-        )
+            onEvent = {})
     }
 }

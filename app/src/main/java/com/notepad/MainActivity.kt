@@ -37,7 +37,9 @@ import com.notepad.screen.delete.DeleteViewModel
 import com.notepad.screen.detail.DetailScreen
 import com.notepad.screen.detail.DetailViewModel
 import com.notepad.screen.list.ListScreen
+import com.notepad.screen.list.ListUiEvent
 import com.notepad.screen.list.ListViewModel
+import com.notepad.screen.list.SortItem
 import com.notepad.ui.theme.NotepadTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val backStackEntry by navController.currentBackStackEntryAsState()
             val currentScreenRoute: Route? = Route.getRoute(backStackEntry?.destination?.route)
+            val listViewModel: ListViewModel by viewModels()
 
             NotepadTheme {
 
@@ -68,7 +71,13 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(color = Color.Blue)
+                                    .background(color = Color.Blue),
+                                actions = {
+                                    SortItem(onClick = {
+                                        listViewModel.onEvent(ListUiEvent.SortNotes(it))
+                                    })
+                                }
+
                             )
                         }
 
@@ -95,8 +104,6 @@ class MainActivity : ComponentActivity() {
                         startDestination = Route.LIST.name
                     ) {
                         composable(Route.LIST.name) {
-
-                            val listViewModel: ListViewModel by viewModels()
 
                             ListScreen(
                                 uiStateFlow = listViewModel.uiState,

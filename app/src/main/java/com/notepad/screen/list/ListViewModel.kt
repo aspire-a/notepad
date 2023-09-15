@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.notepad.data.datasource.local.roomdb.entity.NotesEntity
 import com.notepad.data.repository.NoteRepository
 import com.notepad.model.ExceptionHandler
+import com.notepad.model.SortModel
 import com.notepad.model.UiEvent
 import com.notepad.navigation.Route
+import com.notepad.util.sortNoteListByName
 import com.notepad.util.sortNoteListByUpdateDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -52,6 +54,10 @@ class ListViewModel @Inject constructor(
             is ListUiEvent.AskPopUp -> {
                 askPopUp(listUiEvent.notesEntity)
             }
+
+            is ListUiEvent.SortNotes -> {
+                sortNotes(listUiEvent.sortModel)
+            }
         }
     }
 
@@ -59,8 +65,7 @@ class ListViewModel @Inject constructor(
         viewModelScope.launch(ExceptionHandler.handler) {
             _uiEvent.send(
                 UiEvent.Navigate(
-                    route = Route.DETAIL.name,
-                    data = mapOf<String, Any>(
+                    route = Route.DETAIL.name, data = mapOf<String, Any>(
                         "DetailData" to textId
                     )
                 )
@@ -70,17 +75,28 @@ class ListViewModel @Inject constructor(
 
     private fun getNotes() {
         viewModelScope.launch(ExceptionHandler.handler) {
-            noteRepo.getAllNotes()
-                .catch {
-                    _uiEvent.send(UiEvent.ShowToast(it.message))
-                }
-                .collect { noteList ->
-                    _uiState.update { state ->
-                        state.copy(
-                            noteList = noteList.sortNoteListByUpdateDate()
-                        )
+            noteRepo.getAllNotes().catch {
+                _uiEvent.send(UiEvent.ShowToast(it.message))
+            }.collect { noteList ->
+
+                when (_uiState.value.listSortModel) {
+                    SortModel.DATE -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                noteList = noteList.sortNoteListByUpdateDate()
+                            )
+                        }
+                    }
+
+                    SortModel.NAME -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                noteList = noteList.sortNoteListByName()
+                            )
+                        }
                     }
                 }
+            }
         }
     }
 
@@ -89,12 +105,35 @@ class ListViewModel @Inject constructor(
         viewModelScope.launch(ExceptionHandler.handler) {
             _uiEvent.send(
                 UiEvent.ShowPopUp(
-                    route = Route.DELETE.name,
-                    data = mapOf(
+                    route = Route.DELETE.name, data = mapOf(
                         "DeleteData" to notesEntity
                     )
                 )
             )
+        }
+    }
+
+    private fun sortNotes(sortModel: SortModel) {
+        viewModelScope.launch(ExceptionHandler.handler) {
+            when (sortModel) {
+                SortModel.NAME -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            listSortModel = sortModel,
+                            noteList = _uiState.value.noteList.sortNoteListByName()
+                        )
+                    }
+                }
+
+                SortModel.DATE -> {
+                    _uiState.update { state ->
+                        state.copy(
+                            listSortModel = sortModel,
+                            noteList = _uiState.value.noteList.sortNoteListByUpdateDate()
+                        )
+                    }
+                }
+            }
         }
     }
 
